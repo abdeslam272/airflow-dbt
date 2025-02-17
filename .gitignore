@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.env
+
+# Airflow
+logs/
+airflow.cfg
+unittests.cfg
+webserver_config.py
+airflow.db
+.dags/
+
+# dbt
+dbt_packages/
+target/
+logs/
+manifest.json
+run_results.json
+
+# VS Code
+.vscode/
+.idea/
+
+# Docker
+*.log
+*.pid
+dbt_profiles.yml
+.env
