@@ -1,6 +1,28 @@
 version: '3.8'
 
 services:
+  #On met d'abord les base de donnees Postgres (dbt+airflow)
+  postgres-airflow:
+    image: postgres:13
+    container_name: postgres-airflow
+    environment:
+      - POSTGRES_DB:airflow-db
+      - POSTGRES_USER:airflow-user
+      - POSTGRES_PASSWORD:airflow-password
+    
+    ports:
+      - "5432:5432"
+
+  postgres-dbt:
+    image: postgres:13
+    container_name: postgres-dbt
+    environment:
+      - POSTGRES_DB:dbt-db
+      - POSTGRES_USER:dbt-user
+      - POSTGRES_PASSWORD:dbt-password
+    
+    ports:
+      - "5432:5432"
   airflow-webserver:
     build: .
     container_name: airflow-webserver
