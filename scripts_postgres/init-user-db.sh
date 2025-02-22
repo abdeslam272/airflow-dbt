@@ -1,11 +1,17 @@
-#!/bin/bash
-set -e
+# 1. Build your images
+docker-compose build
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-	ALTER ROLE $POSTGRES_USER SET search_path TO $AIRFLOW_SCHEMA;
-	-- CREATE SCHEMA IF NOT EXISTS $DBT_SCHEMA AUTHORIZATION $POSTGRES_USER;
-	-- CREATE SCHEMA IF NOT EXISTS $DBT_SEED_SCHEMA AUTHORIZATION $POSTGRES_USER;
-	CREATE SCHEMA IF NOT EXISTS $AIRFLOW_SCHEMA AUTHORIZATION $POSTGRES_USER;
+# 2. Start the containers
+docker-compose up -d
 
-	SET datestyle = "ISO, DMY";
-EOSQL
+# 3. Initialize the Airflow database (only once)
+docker exec -it airflow-webserver airflow db init
+
+# 4. Create an Airflow user (if needed)
+docker exec -it airflow-webserver airflow users create \
+    --username admin \
+    --firstname First \
+    --lastname Last \
+    --role Admin \
+    --email admin@example.com \
+    --password admin
