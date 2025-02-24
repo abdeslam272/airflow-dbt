@@ -62,6 +62,8 @@ services:
     container_name: dbt
     depends_on:
       - postgres-dbt
+    entrypoint: ["dbt"]
+    command: ["--help"]
     volumes:
       - ./dbt:/usr/app/dbt
     environment:

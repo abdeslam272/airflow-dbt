@@ -1,0 +1,12 @@
+default:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: postgres-dbt  # Nom du service Docker
+      user: dbt-user
+      password: dbt-password
+      port: 5434
+      dbname: dbt-db
+      schema: public
+      threads: 4
