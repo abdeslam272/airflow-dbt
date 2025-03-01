@@ -3,7 +3,8 @@ version: "1.0.0"
 profile: default  # Doit correspondre au nom du profil dans profiles.yml
 
 model-paths: ["models"]
-target-path: "target"
-clean-targets:
-  - "target"
-  - "dbt_packages"
+
+models:
+  my_project:
+    example_model:
+      +materialized: table

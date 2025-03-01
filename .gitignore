@@ -17,6 +17,7 @@ airflow.db
 .dags/
 
 # dbt
+dbt/.user.yml
 dbt_packages/
 target/
 logs/
