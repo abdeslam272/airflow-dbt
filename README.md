@@ -82,3 +82,48 @@ SELECT 1 AS example_column
 ```
 
 📌 Problème possible : Si le dossier models/ est vide, dbt ne trouve rien à exécuter.
+
+## Erreurs :
+$ docker logs dbt
+09:51:58  Running with dbt=1.9.0
+09:51:59  Registered adapter: postgres=1.9.0
+09:51:59  [WARNING]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.my_project.example_model
+09:51:59  Found 1 model, 429 macros
+09:51:59
+09:51:59  Concurrency: 4 threads (target='dev')
+09:51:59
+09:51:59
+09:51:59  Finished running  in 0 hours 0 minutes and 0.08 seconds (0.08s).
+09:51:59  Encountered an error:
+Database Error
+  connection to server at "postgres-dbt" (172.18.0.3), port 5434 failed: Connection refused
+        Is the server running on that host and accepting TCP/IP connections?
+
+ce que j'ai fait, c'est changer le port dans le fichier profiles.yml pour utiliser 5432
+
+j'ai ceci maintenant :
+$ docker logs dbt
+10:07:06  Running with dbt=1.9.0
+10:07:06  Registered adapter: postgres=1.9.0
+10:07:07  Unable to do partial parsing because profile has changed
+10:07:09  Found 1 model, 429 macros
+10:07:09
+10:07:09  Concurrency: 4 threads (target='dev')
+10:07:09
+10:07:09  1 of 1 START sql table model public.example_model .............................. [RUN]
+10:07:09  1 of 1 OK created sql table model public.example_model ......................... [SELECT 1 in 0.24s]
+10:07:09
+10:07:09  Finished running 1 table model in 0 hours 0 minutes and 0.53 seconds (0.53s).
+10:07:09
+10:07:09  Completed successfully
+10:07:09
+10:07:09  Done. PASS=1 WARN=0 ERROR=0 SKIP=0 TOTAL=1
+10:07:13  Running with dbt=1.9.0
+10:07:13  Registered adapter: postgres=1.9.0
+10:07:14  Found 1 model, 429 macros
+10:07:14
+10:07:14  Concurrency: 4 threads (target='dev')
+10:07:14
+10:07:14  1 of 1 START sql table model public.example_model .............................. [RUN]
