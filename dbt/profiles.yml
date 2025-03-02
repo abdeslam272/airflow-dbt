@@ -6,7 +6,7 @@ default:
       host: postgres-dbt  # Nom du service Docker
       user: dbt-user
       password: dbt-password
-      port: 5434
+      port: 5432
       dbname: dbt-db
       schema: public
       threads: 4

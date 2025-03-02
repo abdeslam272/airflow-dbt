@@ -5,6 +5,6 @@ profile: default  # Doit correspondre au nom du profil dans profiles.yml
 model-paths: ["models"]
 
 models:
-  my_project:
+  my_dbt_project:
     example_model:
       +materialized: table

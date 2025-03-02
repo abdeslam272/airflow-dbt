@@ -23,6 +23,19 @@ services:
       - "5434:5432" # Change port to avoid conflicts
     restart: always
 
+  #pgadmin for postgres-dbt
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-dbt
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
   # Airflow
   airflow-webserver:
     build:
@@ -66,3 +79,6 @@ services:
     environment:
       DBT_PROFILES_DIR: /usr/app/dbt
     restart: always
+
+volumes:
+  pgadmin_data:
