@@ -3,6 +3,11 @@ version: "1.0.0"
 profile: default  # Doit correspondre au nom du profil dans profiles.yml
 
 model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
 
 models:
   my_dbt_project:
