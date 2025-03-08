@@ -127,3 +127,23 @@ $ docker logs dbt
 10:07:14  Concurrency: 4 threads (target='dev')
 10:07:14
 10:07:14  1 of 1 START sql table model public.example_model .............................. [RUN]
+
+
+# Compréhension 
+to execute sql file in the racine project inside a container
+```bash
+docker exec -i postgres-dbt psql -U dbt-user -d dbt-db < init.sql
+```
+Make the Script Executable
+Run this command in your terminal to make the script executable:
+
+```bash
+chmod +x import_data.sh
+```
+
+Run the Script
+Execute the script with:
+
+```bash
+./import_data.sh
+```
