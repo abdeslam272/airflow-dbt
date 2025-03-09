@@ -169,3 +169,15 @@ docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy customers FROM 
 docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy orders FROM '/orders.csv' WITH CSV HEADER;"
 docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy order_items FROM '/order_items.csv
 ```
+
+
+Le fichier sources.yml (dans le folder models) est utilisé dans DBT pour déclarer les sources de données externes (par exemple, les tables brutes dans un entrepôt de données). Il permet de :
+✅ Définir les schémas et tables sources (ex. tables brutes dans un schéma raw)
+✅ Ajouter des tests de qualité sur ces sources
+✅ Faciliter la traçabilité des données et la documentation
+
+
+la commande pour dbt run :
+```sh
+docker exec -it dbt dbt run
+```
