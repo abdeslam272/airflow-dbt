@@ -147,3 +147,25 @@ Execute the script with:
 ```bash
 ./import_data.sh
 ```
+
+--> Ca pas marchée avec le fichier import_data mais ca marché avec les commads suivants :
+✅ Recharger les tables et importer les données
+1️⃣ Copier et exécuter le script corrigé
+
+```sh
+docker cp init.sql postgres-dbt:/init.sql
+docker exec -i postgres-dbt psql -U dbt-user -d dbt-db < init.sql
+```
+2️⃣ Vérifier les tables
+
+```sh
+docker exec -it postgres-dbt psql -U dbt-user -d dbt-db -c "\dt"
+```
+3️⃣ Importer les fichiers CSV
+
+```sh
+docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy products FROM '/products.csv' WITH CSV HEADER;"
+docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy customers FROM '/customers.csv' WITH CSV HEADER;"
+docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy orders FROM '/orders.csv' WITH CSV HEADER;"
+docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy order_items FROM '/order_items.csv
+```
