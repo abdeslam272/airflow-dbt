@@ -20,7 +20,7 @@ CREATE TABLE customers (
 CREATE TABLE orders (
     id INT PRIMARY KEY,
     customer_id INT,
-    order_date TEXT,  -- Fixed missing comma
+    order_date DATE,
     total_amount INT,
     status TEXT,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
@@ -31,7 +31,7 @@ CREATE TABLE order_items (
     order_id INT,
     product_id INT,
     quantity INT,
-    price INT,
+    unit_price INT, 
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
