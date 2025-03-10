@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw_data
+    database: dbt-db # Postgres database
+    schema: raw # schema where raw data is stored
+    tables:
+      - name: customers
+      - name: orders
+      - name: order_items
+      - name: products
