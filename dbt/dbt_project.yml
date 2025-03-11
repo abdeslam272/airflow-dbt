@@ -11,5 +11,7 @@ snapshot-paths: ["snapshots"]
 
 models:
   my_dbt_project:
-    example_model:
+    staging:
+      +materialized: view
+    marts:
       +materialized: table
