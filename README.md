@@ -17,7 +17,7 @@ dbt build on the image ghcr.io/dbt-labs/dbt-postgres:latest
 
 Also when we create the containers we need to add an airflow user by :
 
-
+```sh
 docker exec -it airflow-webserver airflow users create \
     --username admin \
     --firstname First \
@@ -25,6 +25,7 @@ docker exec -it airflow-webserver airflow users create \
     --role Admin \
     --email admin@example.com \
     --password admin
+```
 
 
 
