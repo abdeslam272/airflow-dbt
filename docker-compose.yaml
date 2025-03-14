@@ -54,7 +54,7 @@ services:
     entrypoint: ["/bin/bash", "-c", "airflow db init && airflow webserver"]
     volumes:
       - ./dags:/opt/airflow/dags
-
+      - ./data:/opt/airflow/data
 
   # Airflow Scheduler
   airflow-scheduler:
@@ -70,6 +70,8 @@ services:
       AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey
     restart: always
     entrypoint: ["airflow", "scheduler"]
+    volumes:
+      - ./data:/opt/airflow/data
 
   # dbt
   dbt:
