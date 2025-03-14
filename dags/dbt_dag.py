@@ -21,10 +21,10 @@ dag = DAG(
 copy_data = BashOperator(
     task_id="copy_data",
     bash_command="""
-    docker cp data/products.csv postgres-dbt:/products.csv
-    docker cp data/customers.csv postgres-dbt:/customers.csv
-    docker cp data/orders.csv postgres-dbt:/orders.csv
-    docker cp data/order_items.csv postgres-dbt:/order_items.csv
+    docker cp /opt/airflow/data/products.csv postgres-dbt:/products.csv
+    docker cp /opt/airflow/data/customers.csv postgres-dbt:/customers.csv
+    docker cp /opt/airflow/data/orders.csv postgres-dbt:/orders.csv
+    docker cp /opt/airflow/data/order_items.csv postgres-dbt:/order_items.csv
     """,
     dag=dag,
 )
