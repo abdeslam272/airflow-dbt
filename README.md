@@ -207,3 +207,13 @@ docker exec -it dbt dbt run
 | `dbt_project.yml`    | Fichier de configuration du projet dbt (nom, dossiers utilisés, paramètres, etc.). |
 | `profiles.yml`       | Fichier qui configure la connexion à la base de données (nom du profil, hôte, utilisateur, etc.). |
 | `.user.yml`         | Configuration spécifique à l'utilisateur local, pas toujours présente. |
+
+# 📄 Commande pour lancer des tests
+
+| Commande                             | Action                                           |
+|--------------------------------------|--------------------------------------------------|
+| `dbt test`                          | Exécute tous les tests                          |
+| `dbt test --select order_items`     | Exécute les tests sur `order_items`            |
+| `dbt test --select staging`         | Exécute les tests des modèles dans `/models/staging/` |
+| `dbt test --select test_type:not_null` | Exécute tous les tests `not_null`               |
+| `dbt test --select order_items.id`  | Exécute les tests sur `id` de `order_items`    |
