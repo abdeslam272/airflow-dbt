@@ -182,3 +182,28 @@ la commande pour dbt run :
 ```sh
 docker exec -it dbt dbt run
 ```
+
+
+# 📁 Dossiers principaux dans un projet dbt
+
+| Dossier              | Description |
+|----------------------|------------|
+| `models/`           | Contient les modèles SQL qui transforment les données. |
+| `models/staging/`   | Contient les modèles de staging, qui préparent les données brutes pour les transformations finales. |
+| `models/marts/`     | Contient les modèles finaux, souvent agrégés, prêts pour l'analyse. |
+| `macros/`           | Contient des fonctions réutilisables écrites en Jinja pour automatiser des transformations SQL. |
+| `logs/`             | Contient les fichiers de log des exécutions de dbt (`dbt run`, `dbt test`, etc.). |
+| `target/`           | Contient les fichiers compilés et les résultats des exécutions dbt (SQL transformés, logs, documentation générée). |
+| `snapshots/`        | Contient les définitions des snapshots, qui permettent de suivre l'évolution des données au fil du temps. |
+| `tests/`            | Contient des tests SQL définis pour valider la qualité des données. |
+| `seeds/`            | Contient des fichiers CSV qui peuvent être chargés comme tables dans la base de données. |
+
+---
+
+# 📄 Fichiers importants dans un projet dbt
+
+| Fichier              | Description |
+|----------------------|------------|
+| `dbt_project.yml`    | Fichier de configuration du projet dbt (nom, dossiers utilisés, paramètres, etc.). |
+| `profiles.yml`       | Fichier qui configure la connexion à la base de données (nom du profil, hôte, utilisateur, etc.). |
+| `.user.yml`         | Configuration spécifique à l'utilisateur local, pas toujours présente. |
