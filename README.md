@@ -217,3 +217,38 @@ docker exec -it dbt dbt run
 | `dbt test --select staging`         | Exécute les tests des modèles dans `/models/staging/` |
 | `dbt test --select test_type:not_null` | Exécute tous les tests `not_null`               |
 | `dbt test --select order_items.id`  | Exécute les tests sur `id` de `order_items`    |
+
+
+## 🧭 Résumé du projet
+
+Ce projet suit un pipeline de données complet, de l'ingestion à l'orchestration, en utilisant **PostgreSQL**, **dbt**, **Airflow** et **Docker**. Voici les grandes étapes :
+
+### 1. 📥 Ingestion des données
+
+Les fichiers CSV suivants sont disponibles dans le dossier `data/` :
+- `customers.csv`
+- `order_items.csv`
+- `orders.csv`
+- `products.csv`
+
+Avant d'ingérer les données, il est nécessaire d'**initialiser les tables** dans la base PostgreSQL avec les noms et types de colonnes appropriés.  
+Ensuite, le script `import_data.sh` permet d'**insérer les données** dans ces tables.
+
+### 2. 🛠️ Transformations & tests avec dbt
+
+Une fois les données ingérées, nous utilisons **dbt** pour :
+- Appliquer les **transformations** sur les données brutes
+- Effectuer des **tests de qualité** des données
+
+Les modèles dbt génèrent des tables transformées dans le **schéma cible** désigné.
+
+### 3. ⏱️ Orchestration avec Airflow
+
+Enfin, l'ensemble du pipeline est orchestré via **Airflow**, avec des **DAGs** qui automatisent :
+- L'ingestion
+- Les transformations
+- Les validations
+
+### 4. 🐳 Environnement Dockerisé
+
+Tout le projet fonctionne à l'intérieur de **conteneurs Docker**, ce qui garantit un environnement reproductible et facile à déployer.
