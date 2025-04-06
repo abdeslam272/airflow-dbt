@@ -252,3 +252,7 @@ Enfin, l'ensemble du pipeline est orchestré via **Airflow**, avec des **DAGs** 
 ### 4. 🐳 Environnement Dockerisé
 
 Tout le projet fonctionne à l'intérieur de **conteneurs Docker**, ce qui garantit un environnement reproductible et facile à déployer.
+
+# Error: Is the docker daemon running?
+![image](https://github.com/user-attachments/assets/a94905a4-21dd-4c67-82c1-0f488b3c9145)
+
