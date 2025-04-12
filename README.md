@@ -256,3 +256,43 @@ Tout le projet fonctionne à l'intérieur de **conteneurs Docker**, ce qui garan
 # Error: Is the docker daemon running?
 ![image](https://github.com/user-attachments/assets/a94905a4-21dd-4c67-82c1-0f488b3c9145)
 
+🧠 Pourquoi cette erreur ?
+Cette erreur signifie que le conteneur dbt n’était pas en cours d’exécution au moment où la commande a été exécutée.
+La commande docker exec ne peut être utilisée que sur un conteneur actif. Si le conteneur est arrêté (ex: crash ou fin du processus), cette erreur apparaît.
+
+🔍 Cause probable
+Dans le Dockerfile ou docker-compose.yml, la commande de démarrage du conteneur était quelque chose comme :
+
+```sh
+CMD ["bash", "-c", "dbt deps --profiles-dir profiles && sleep infinity"]
+```
+Si le dossier profiles n’est pas monté correctement ou mal configuré, la commande dbt deps échoue → le conteneur s’arrête immédiatement sans exécuter sleep infinity.
+
+✅ Solution
+Étapes pour corriger le problème :
+Vérifier que le volume du profil est bien monté dans le docker-compose.yml :
+```sh
+volumes:
+  - ./profiles:/usr/app/profiles
+```
+Corriger la commande de lancement dans le service dbt :
+
+```yaml
+command: ["bash", "-c", "dbt deps --profiles-dir profiles && dbt build --profiles-dir profiles && sleep infinity"]
+```
+
+🔒 Le sleep infinity est essentiel pour garder le conteneur actif et pouvoir y accéder avec docker exec.
+
+🟢 Résultat
+Une fois ces changements faits, le conteneur reste actif et tu peux exécuter :
+```
+docker exec -it dbt dbt run
+```
+ou
+```
+docker exec -it dbt bash
+```
+
+
+🧠 Résumé en une phrase
+Cette erreur venait du fait que le conteneur DBT crashait au démarrage (souvent à cause d’un profil manquant ou mal configuré), et ne restait donc pas actif. Pour résoudre cela, il faut s'assurer que dbt deps fonctionne bien et terminer la commande par sleep infinity pour garder le conteneur actif.
