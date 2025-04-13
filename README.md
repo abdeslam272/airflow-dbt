@@ -296,3 +296,62 @@ docker exec -it dbt bash
 
 🧠 Résumé en une phrase
 Cette erreur venait du fait que le conteneur DBT crashait au démarrage (souvent à cause d’un profil manquant ou mal configuré), et ne restait donc pas actif. Pour résoudre cela, il faut s'assurer que dbt deps fonctionne bien et terminer la commande par sleep infinity pour garder le conteneur actif.
+
+
+
+### 🐛 Problème rencontré : Could not find profile named 'default'
+Lors de l'exécution de la commande dbt run, l'erreur suivante est apparue :
+```
+Runtime Error: Could not find profile named 'default'
+```
+
+### 🎯 Cause
+dbt recherche par défaut son fichier de configuration profiles.yml dans le chemin suivant à l’intérieur du conteneur Docker :
+```
+/root/.dbt/profiles.yml
+```
+Or, dans ce projet, le fichier profiles.yml se trouvait à un emplacement personnalisé :
+
+```
+./dbt/profiles/profiles.yml
+```
+
+Et dans le docker-compose.yml, seul le dossier ./dbt était monté vers /usr/app/dbt, sans inclure explicitement le fichier profiles.yml au bon endroit.
+
+### ✅ Solution
+Ajouter un volume pour monter directement profiles.yml dans le chemin attendu par dbt :
+```
+services:
+  dbt:
+    ...
+    volumes:
+      - ./dbt:/usr/app/dbt
+      - ./dbt/profiles/profiles.yml:/root/.dbt/profiles.yml
+```
+
+###  📌 Importance du fichier profiles.yml
+Le fichier profiles.yml contient les informations de connexion à la base de données (type, hôte, port, identifiants, schéma, etc.).
+C’est essentiel pour que dbt puisse se connecter au bon environnement cible.
+
+Voici un exemple de structure :
+```
+default:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: postgres-dbt
+      user: dbt-user
+      password: dbt-password
+      port: 5432
+      dbname: dbt-db
+      schema: raw
+      threads: 4
+```
+
+### ✅ Résultat après correction
+Après avoir corrigé la configuration, l'exécution de dbt run fonctionne parfaitement 🎉 :
+```
+Completed successfully
+PASS=5 WARN=0 ERROR=0 SKIP=0 TOTAL=5
+```
