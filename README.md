@@ -255,6 +255,21 @@ Tout le projet fonctionne à l'intérieur de **conteneurs Docker**, ce qui garan
 
 # Error: Is the docker daemon running?
 ![image](https://github.com/user-attachments/assets/a94905a4-21dd-4c67-82c1-0f488b3c9145)
+#  Cause :
+Airflow essaie de communiquer avec le daemon Docker, mais ne trouve pas le socket Docker (/var/run/docker.sock) à l’intérieur du conteneur. Cela arrive quand on utilise des opérateurs comme DockerOperator sans avoir monté le socket Docker.
+
+# ✅ Solution : Monter le socket Docker dans le conteneur Airflow
+Dans le fichier docker-compose.yml, ajoute cette ligne dans le service Airflow :
+
+```yaml
+services:
+  airflow:
+    ...
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+Cela permet à Airflow, exécuté dans un conteneur, de communiquer avec le Docker daemon de l’hôte pour exécuter d'autres conteneurs.
+
 
 🧠 Pourquoi cette erreur ?
 Cette erreur signifie que le conteneur dbt n’était pas en cours d’exécution au moment où la commande a été exécutée.
