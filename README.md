@@ -355,3 +355,11 @@ Après avoir corrigé la configuration, l'exécution de dbt run fonctionne parfa
 Completed successfully
 PASS=5 WARN=0 ERROR=0 SKIP=0 TOTAL=5
 ```
+
+
+### ✅ Nettoyer l’environnement (optionnel mais recommandé)
+
+```bash
+docker-compose down -v  # arrête et supprime les volumes
+docker system prune -f  # nettoie les conteneurs/volumes/images inutilisés
+```
