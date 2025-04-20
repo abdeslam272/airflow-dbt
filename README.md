@@ -378,3 +378,10 @@ PASS=5 WARN=0 ERROR=0 SKIP=0 TOTAL=5
 docker-compose down -v  # arrête et supprime les volumes
 docker system prune -f  # nettoie les conteneurs/volumes/images inutilisés
 ```
+
+
+# 
+![image](https://github.com/user-attachments/assets/4ec56e4d-6d48-4137-8710-e8129ca97c9d)
+
+La commande \copy utilisée dans la tâche tente de copier les données dans des tables PostgreSQL qui n'ont pas encore été créées. Le schéma raw n'existe probablement pas non plus.
+ajouter une tâche Airflow de creer le fichier init.sql avant load_data
