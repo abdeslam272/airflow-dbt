@@ -41,6 +41,12 @@ init_db = BashOperator(
 load_data = BashOperator(
     task_id="load_data",
     bash_command="""
+    docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "TRUNCATE TABLE raw.products;"
+    docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "TRUNCATE TABLE raw.customers;"
+    docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "TRUNCATE TABLE raw.orders;"
+    docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "TRUNCATE TABLE raw.order_items;"
+
+
     docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy raw.products FROM '/products.csv' WITH CSV HEADER;"
     docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy raw.customers FROM '/customers.csv' WITH CSV HEADER;"
     docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -c "\copy raw.orders FROM '/orders.csv' WITH CSV HEADER;"
