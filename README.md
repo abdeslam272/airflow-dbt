@@ -385,3 +385,9 @@ docker system prune -f  # nettoie les conteneurs/volumes/images inutilisés
 
 La commande \copy utilisée dans la tâche tente de copier les données dans des tables PostgreSQL qui n'ont pas encore été créées. Le schéma raw n'existe probablement pas non plus.
 ajouter une tâche Airflow de creer le fichier init.sql avant load_data
+
+# duplicate key value violates unique constraint "products_pkey"
+![image](https://github.com/user-attachments/assets/151eff39-f3ac-43cb-b99b-1269ca9f7cc3)
+
+
+Modifie le BashOperator load_data pour ajouter un TRUNCATE avant chaque COPY
