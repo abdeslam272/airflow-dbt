@@ -40,7 +40,7 @@ services:
   airflow-webserver:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.airflow
     container_name: airflow-webserver
     depends_on:
       - postgres-airflow
@@ -55,12 +55,14 @@ services:
     volumes:
       - ./dags:/opt/airflow/dags
       - ./data:/opt/airflow/data
+      - /var/run/docker.sock:/var/run/docker.sock # Monter le socket Docker dans le conteneur Airflow
+
 
   # Airflow Scheduler
   airflow-scheduler:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.airflow
     container_name: airflow-scheduler
     depends_on:
       - postgres-airflow
@@ -71,20 +73,22 @@ services:
     restart: always
     entrypoint: ["airflow", "scheduler"]
     volumes:
+      - ./dags:/opt/airflow/dags
       - ./data:/opt/airflow/data
+      - /var/run/docker.sock:/var/run/docker.sock # Monter le socket Docker dans le conteneur Airflow
 
   # dbt
   dbt:
-    image: ghcr.io/dbt-labs/dbt-postgres:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile.dbt
     container_name: dbt
     depends_on:
       - postgres-dbt
-    command: ["run"]
+    command: ["bash", "-c", "echo '⚙️  Starting dbt...' && dbt deps --profiles-dir profiles || true && dbt build --profiles-dir profiles || true && echo '✅ Done' && sleep infinity"]
     volumes:
       - ./dbt:/usr/app/dbt
-    environment:
-      DBT_PROFILES_DIR: /usr/app/dbt
-    restart: always
+      - ./dbt/profiles/profiles.yml:/root/.dbt/profiles.yml
 
 volumes:
   pgadmin_data:

@@ -21,6 +21,7 @@ dag = DAG(
 copy_data = BashOperator(
     task_id="copy_data",
     bash_command="""
+    docker cp /opt/airflow/dags/init.sql postgres-dbt:/init.sql
     docker cp /opt/airflow/data/products.csv postgres-dbt:/products.csv
     docker cp /opt/airflow/data/customers.csv postgres-dbt:/customers.csv
     docker cp /opt/airflow/data/orders.csv postgres-dbt:/orders.csv
@@ -28,6 +29,13 @@ copy_data = BashOperator(
     """,
     dag=dag,
 )
+
+init_db = BashOperator(
+    task_id="init_db",
+    bash_command='docker exec -i postgres-dbt psql -U dbt-user -d dbt-db -f /init.sql',
+    dag=dag,
+)
+
 
 # 2️⃣ Charger les fichiers CSV dans PostgreSQL (schéma RAW)
 load_data = BashOperator(
@@ -70,4 +78,4 @@ dbt_docs_serve = BashOperator(
 )
 
 # Définition des dépendances
-copy_data >> load_data >> dbt_run >> dbt_test >> dbt_docs >> dbt_docs_serve
+copy_data >> init_db >> load_data >> dbt_run >> dbt_test >> dbt_docs >> dbt_docs_serve
