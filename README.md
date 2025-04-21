@@ -217,3 +217,171 @@ docker exec -it dbt dbt run
 | `dbt test --select staging`         | Exécute les tests des modèles dans `/models/staging/` |
 | `dbt test --select test_type:not_null` | Exécute tous les tests `not_null`               |
 | `dbt test --select order_items.id`  | Exécute les tests sur `id` de `order_items`    |
+
+
+## 🧭 Résumé du projet
+
+Ce projet suit un pipeline de données complet, de l'ingestion à l'orchestration, en utilisant **PostgreSQL**, **dbt**, **Airflow** et **Docker**. Voici les grandes étapes :
+
+### 1. 📥 Ingestion des données
+
+Les fichiers CSV suivants sont disponibles dans le dossier `data/` :
+- `customers.csv`
+- `order_items.csv`
+- `orders.csv`
+- `products.csv`
+
+Avant d'ingérer les données, il est nécessaire d'**initialiser les tables** dans la base PostgreSQL avec les noms et types de colonnes appropriés.  
+Ensuite, le script `import_data.sh` permet d'**insérer les données** dans ces tables.
+
+### 2. 🛠️ Transformations & tests avec dbt
+
+Une fois les données ingérées, nous utilisons **dbt** pour :
+- Appliquer les **transformations** sur les données brutes
+- Effectuer des **tests de qualité** des données
+
+Les modèles dbt génèrent des tables transformées dans le **schéma cible** désigné.
+
+### 3. ⏱️ Orchestration avec Airflow
+
+Enfin, l'ensemble du pipeline est orchestré via **Airflow**, avec des **DAGs** qui automatisent :
+- L'ingestion
+- Les transformations
+- Les validations
+
+### 4. 🐳 Environnement Dockerisé
+
+Tout le projet fonctionne à l'intérieur de **conteneurs Docker**, ce qui garantit un environnement reproductible et facile à déployer.
+
+# Error: Is the docker daemon running?
+![image](https://github.com/user-attachments/assets/a94905a4-21dd-4c67-82c1-0f488b3c9145)
+#  Cause :
+Airflow essaie de communiquer avec le daemon Docker, mais ne trouve pas le socket Docker (/var/run/docker.sock) à l’intérieur du conteneur. Cela arrive quand on utilise des opérateurs comme DockerOperator sans avoir monté le socket Docker.
+
+# ✅ Solution : Monter le socket Docker dans le conteneur Airflow
+Dans le fichier docker-compose.yml, ajoute cette ligne dans le service Airflow :
+
+```yaml
+services:
+  airflow:
+    ...
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+Cela permet à Airflow, exécuté dans un conteneur, de communiquer avec le Docker daemon de l’hôte pour exécuter d'autres conteneurs.
+
+
+🧠 Pourquoi cette erreur ?
+Cette erreur signifie que le conteneur dbt n’était pas en cours d’exécution au moment où la commande a été exécutée.
+La commande docker exec ne peut être utilisée que sur un conteneur actif. Si le conteneur est arrêté (ex: crash ou fin du processus), cette erreur apparaît.
+
+🔍 Cause probable
+Dans le Dockerfile ou docker-compose.yml, la commande de démarrage du conteneur était quelque chose comme :
+
+```sh
+CMD ["bash", "-c", "dbt deps --profiles-dir profiles && sleep infinity"]
+```
+Si le dossier profiles n’est pas monté correctement ou mal configuré, la commande dbt deps échoue → le conteneur s’arrête immédiatement sans exécuter sleep infinity.
+
+✅ Solution
+Étapes pour corriger le problème :
+Vérifier que le volume du profil est bien monté dans le docker-compose.yml :
+```sh
+volumes:
+  - ./profiles:/usr/app/profiles
+```
+Corriger la commande de lancement dans le service dbt :
+
+```yaml
+command: ["bash", "-c", "dbt deps --profiles-dir profiles && dbt build --profiles-dir profiles && sleep infinity"]
+```
+
+🔒 Le sleep infinity est essentiel pour garder le conteneur actif et pouvoir y accéder avec docker exec.
+
+🟢 Résultat
+Une fois ces changements faits, le conteneur reste actif et tu peux exécuter :
+```
+docker exec -it dbt dbt run
+```
+ou
+```
+docker exec -it dbt bash
+```
+
+
+🧠 Résumé en une phrase
+Cette erreur venait du fait que le conteneur DBT crashait au démarrage (souvent à cause d’un profil manquant ou mal configuré), et ne restait donc pas actif. Pour résoudre cela, il faut s'assurer que dbt deps fonctionne bien et terminer la commande par sleep infinity pour garder le conteneur actif.
+
+
+
+### 🐛 Problème rencontré : Could not find profile named 'default'
+Lors de l'exécution de la commande dbt run, l'erreur suivante est apparue :
+```
+Runtime Error: Could not find profile named 'default'
+```
+
+### 🎯 Cause
+dbt recherche par défaut son fichier de configuration profiles.yml dans le chemin suivant à l’intérieur du conteneur Docker :
+```
+/root/.dbt/profiles.yml
+```
+Or, dans ce projet, le fichier profiles.yml se trouvait à un emplacement personnalisé :
+
+```
+./dbt/profiles/profiles.yml
+```
+
+Et dans le docker-compose.yml, seul le dossier ./dbt était monté vers /usr/app/dbt, sans inclure explicitement le fichier profiles.yml au bon endroit.
+
+### ✅ Solution
+Ajouter un volume pour monter directement profiles.yml dans le chemin attendu par dbt :
+```
+services:
+  dbt:
+    ...
+    volumes:
+      - ./dbt:/usr/app/dbt
+      - ./dbt/profiles/profiles.yml:/root/.dbt/profiles.yml
+```
+
+###  📌 Importance du fichier profiles.yml
+Le fichier profiles.yml contient les informations de connexion à la base de données (type, hôte, port, identifiants, schéma, etc.).
+C’est essentiel pour que dbt puisse se connecter au bon environnement cible.
+
+Voici un exemple de structure :
+```
+default:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: postgres-dbt
+      user: dbt-user
+      password: dbt-password
+      port: 5432
+      dbname: dbt-db
+      schema: raw
+      threads: 4
+```
+
+### ✅ Résultat après correction
+Après avoir corrigé la configuration, l'exécution de dbt run fonctionne parfaitement 🎉 :
+```
+Completed successfully
+PASS=5 WARN=0 ERROR=0 SKIP=0 TOTAL=5
+```
+
+
+### ✅ Nettoyer l’environnement (optionnel mais recommandé)
+
+```bash
+docker-compose down -v  # arrête et supprime les volumes
+docker system prune -f  # nettoie les conteneurs/volumes/images inutilisés
+```
+
+
+# 
+![image](https://github.com/user-attachments/assets/4ec56e4d-6d48-4137-8710-e8129ca97c9d)
+
+La commande \copy utilisée dans la tâche tente de copier les données dans des tables PostgreSQL qui n'ont pas encore été créées. Le schéma raw n'existe probablement pas non plus.
+ajouter une tâche Airflow de creer le fichier init.sql avant load_data
